@@ -15,8 +15,8 @@ fn decode_bencoded_string(encoded_value: &str) -> serde_json::Value {
 }
 
 fn decode_bencoded_integer(encoded_value: &str) -> serde_json::Value {
-    let integer = encoded_value[1..].chars().into_iter().take_while(|ch| ch != &'e').collect();
-    serde_json::Value::String(integer)
+    let integer: String = encoded_value[1..].chars().into_iter().take_while(|ch| ch != &'e').collect();
+    integer.parse().unwrap()
 }
 
 #[allow(dead_code)]
