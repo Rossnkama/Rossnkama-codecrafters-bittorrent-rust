@@ -1,24 +1,33 @@
 use serde_json;
 use std::env;
 
-// Available if you need it!
-// use serde_bencode
+fn decode_bencoded_string(encoded_value: &str) -> serde_json::Value {
+    let colon_index = encoded_value.find(':').unwrap();
+    let number_string = &encoded_value[..colon_index];
+    let number = number_string.parse::<i64>().unwrap();
+
+    let start_index = colon_index + 1;
+    let end_index = start_index + number as usize;
+
+    let string = &encoded_value[start_index..end_index];
+
+    return serde_json::Value::String(string.to_string());
+}
+
+fn decode_bencoded_integer(encoded_value: &str) -> serde_json::Value {
+    let integer = encoded_value[1..].chars().into_iter().take_while(|ch| ch != &'e').collect();
+    serde_json::Value::String(integer)
+}
 
 #[allow(dead_code)]
 fn decode_bencoded_value(encoded_value: &str) -> serde_json::Value {
+    let first_char = encoded_value.chars().next().unwrap();
+    
     // If encoded_value starts with a digit, it's we're dealing with a byte string
-    if encoded_value.chars().next().unwrap().is_digit(10) {
-        // Example: "5:hello" -> "hello"
-        let colon_index = encoded_value.find(':').unwrap();
-        let number_string = &encoded_value[..colon_index];
-        let number = number_string.parse::<i64>().unwrap();
-
-        let start_index = colon_index + 1;
-        let end_index = start_index + number as usize;
-
-        let string = &encoded_value[start_index..end_index];
-
-        return serde_json::Value::String(string.to_string());
+    if first_char.is_digit(10) {
+        decode_bencoded_string(encoded_value)
+    } else if first_char.eq(&'i') {
+        decode_bencoded_integer(encoded_value)
     } else {
         panic!("Unhandled encoded value: {}", encoded_value)
     }
