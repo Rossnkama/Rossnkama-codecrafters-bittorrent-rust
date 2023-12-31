@@ -25,7 +25,7 @@ fn main() {
 
     if command == "decode" {
         let encoded_value = &args[2];
-        let decoded_value: Torrent = serde_bencode::from_str(&encoded_value).unwrap();
+        let decoded_value: Torrent = serde_bencode::from_str::<Torrent>(&encoded_value).unwrap();
         println!("{:#?}", decoded_value);
     } else {
         println!("unknown command: {}", args[1])
