@@ -24,10 +24,12 @@ fn decode_bencoded_value(encoded_value: &str) -> serde_json::Value {
     let first_char = encoded_value.chars().next().unwrap();
     
     // If encoded_value starts with a digit, it's we're dealing with a byte string
-    match first_char {
-        ch if ch.is_digit(10) => decode_bencoded_string(encoded_value),
-        'i' => decode_bencoded_integer(encoded_value),
-        _ => panic!("Unhandled encoded value: {}", encoded_value),
+    if first_char.is_digit(10) {
+        decode_bencoded_string(encoded_value)
+    } else if first_char.eq(&'i') {
+        decode_bencoded_integer(encoded_value)
+    } else {
+        panic!("Unhandled encoded value: {}", encoded_value)
     }
 }
 
@@ -44,3 +46,4 @@ fn main() {
         println!("unknown command: {}", args[1])
     }
 }
+
