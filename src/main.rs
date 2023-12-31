@@ -15,10 +15,9 @@ struct Info {
     length: i64,
     name: String,
     piece_length: usize,
-    pieces: serde_bytes::ByteBuf,
+    pieces: Vec<u8>,
 }
 
-// Usage: your_bittorrent.sh decode "<encoded_value>"
 fn main() {
     let args: Vec<String> = env::args().collect();
     let command = &args[1];
