@@ -15,14 +15,18 @@ fn decode_bencoded_string(encoded_value: &str) -> serde_json::Value {
 }
 
 fn decode_bencoded_integer(encoded_value: &str) -> serde_json::Value {
-    let integer: String = encoded_value[1..].chars().into_iter().take_while(|ch| ch != &'e').collect();
+    let integer: String = encoded_value[1..]
+        .chars()
+        .into_iter()
+        .take_while(|ch| ch != &'e')
+        .collect();
     integer.parse().unwrap()
 }
 
 #[allow(dead_code)]
 fn decode_bencoded_value(encoded_value: &str) -> serde_json::Value {
     let first_char = encoded_value.chars().next().unwrap();
-    
+
     // If encoded_value starts with a digit, it's we're dealing with a byte string
     if first_char.is_digit(10) {
         decode_bencoded_string(encoded_value)
@@ -46,4 +50,3 @@ fn main() {
         println!("unknown command: {}", args[1])
     }
 }
-
