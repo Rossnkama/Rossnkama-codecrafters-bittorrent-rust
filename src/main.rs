@@ -4,6 +4,8 @@ use std::env;
 #[derive(Serialize, Deserialize, PartialEq, Eq, Debug)]
 struct Torrent {
     announce: String,
+    #[serde(rename = "created by")]
+    created_by: String,
     info: Info,
 }
 
