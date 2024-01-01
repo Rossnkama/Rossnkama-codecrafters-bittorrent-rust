@@ -15,12 +15,16 @@ fn render_value(decoded_value: &SerdeBencodeValue) -> String {
             format!("[{}]", list_items.join(", "))
         }
         SerdeBencodeValue::Dict(d) => {
-            let mut entries = vec![];
-            for (key, value) in d {
-                let rendered_key = String::from_utf8_lossy(key);
-                let rendered_value = render_value(value);
-                entries.push(format!("\"{}\": {}", rendered_key, rendered_value));
-            }
+            let mut entries: Vec<_> = d.iter().collect();
+            entries.sort_by(|a, b| a.0.cmp(b.0));
+            let entries: Vec<String> = entries
+                .iter()
+                .map(|(key, value)| {
+                    let rendered_key = String::from_utf8_lossy(key);
+                    let rendered_value = render_value(value);
+                    format!("\"{}\": {}", rendered_key, rendered_value)
+                })
+                .collect();
             format!("{{{}}}", entries.join(", "))
         }
     }
