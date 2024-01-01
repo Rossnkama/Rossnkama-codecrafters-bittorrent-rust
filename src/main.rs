@@ -19,7 +19,7 @@ fn render_value(decoded_value: &SerdeBencodeValue) -> String {
             for (key, value) in d {
                 let rendered_key = String::from_utf8_lossy(key);
                 let rendered_value = render_value(value);
-                entries.push(format!("{}: {}", rendered_key, rendered_value));
+                entries.push(format!("\"{}\": {}", rendered_key, rendered_value));
             }
             format!("{{{}}}", entries.join(", "))
         }
