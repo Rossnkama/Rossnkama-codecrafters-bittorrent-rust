@@ -34,7 +34,7 @@ fn main() {
         if command == "decode" {
             let encoded_value = &args[2];
             let decoded_value = decode_value(encoded_value);
-            println!("{}", render_value(&decoded_value));
+            println!("\"{}\"", render_value(&decoded_value));
         } else {
             println!("unknown command: {}", args[1])
         }
