@@ -68,7 +68,7 @@ fn main() {
             let hex_encoded_data = hex::encode(result);
             println!("Tracker URL: {}", decoded_value.announce);
             println!("Length: {}", decoded_value.info.length);
-            eprintln!("Info Hash: {:?}", hex_encoded_data);
+            println!("Info Hash: {:?}", hex_encoded_data);
         } else {
             println!("unknown command: {}", args[1])
         }
