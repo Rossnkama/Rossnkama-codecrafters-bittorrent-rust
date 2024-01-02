@@ -1,7 +1,6 @@
 use serde::{Serialize, Deserialize};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use std::{env, fs};
-use hex::ToHex;
 use sha1::{Sha1, Digest};
 
 #[derive(Serialize, Deserialize)]
@@ -66,9 +65,10 @@ fn main() {
             let mut hasher = Sha1::new();
             hasher.update(info);
             let result = hasher.finalize();
+            let hex_encoded_data = hex::encode(result);
             println!("Tracker URL: {}", decoded_value.announce);
             println!("Length: {}", decoded_value.info.length);
-            eprintln!("Hash Info: {:?}", result);
+            eprintln!("Hash Info: {:?}", hex_encoded_data);
         } else {
             println!("unknown command: {}", args[1])
         }
