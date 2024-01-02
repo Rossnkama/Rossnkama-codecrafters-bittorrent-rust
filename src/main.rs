@@ -67,7 +67,7 @@ fn main() {
             let result = hasher.finalize();
             let hex_encoded_data = hex::encode(result);
             println!(
-                "Tracker URL: {}\nLength: {}\nInfo Hash: {:?}",
+                "Tracker URL: {} Length: {} Info Hash: {}",
                 decoded_value.announce, decoded_value.info.length, hex_encoded_data
             );
         } else {
