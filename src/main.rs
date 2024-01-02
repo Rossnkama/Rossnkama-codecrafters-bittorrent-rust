@@ -1,22 +1,70 @@
-use serde::{Deserialize, Serialize};
+use serde::de::{self, SeqAccess, Visitor};
+use serde::{Deserialize, Serialize, Deserializer, Serializer};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use sha1::{Digest, Sha1};
-use std::{env, fs};
+use std::{env, fmt, fs};
 
-#[derive(Serialize, Deserialize)]
+struct ByteArrayVisitor;
+
+impl<'de> Visitor<'de> for ByteArrayVisitor {
+    type Value = [u8; 20];
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a sequence of bytes")
+    }
+
+    fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+    where
+        A: SeqAccess<'de>,
+    {
+        let mut array = [0; 20];
+        for i in 0..20 {
+            eprintln!("{}", array[i]);
+            array[i] = seq
+                .next_element()?
+                .ok_or_else(|| de::Error::invalid_length(i, &self))?;
+        }
+        Ok(array)
+    }
+}
+
+#[derive(Debug)]
+pub struct ByteArray([u8; 20]);
+
+impl<'de> Deserialize<'de> for ByteArray {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let b = deserializer.deserialize_seq(ByteArrayVisitor)?;
+        Ok(ByteArray(b))
+    }
+}
+
+impl Serialize for ByteArray {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        // Convert the ByteArray to a slice and serialize it
+        serializer.serialize_bytes(&self.0)
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 struct Torrent {
     announce: String,
     info: Info,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Info {
     length: usize,
     name: String,
     #[serde(rename = "piece length")]
     piece_length: usize,
-    #[serde(with = "serde_bytes")]
-    pieces: Vec<u8>,
+    // #[serde(with = "serde_bytes")]
+    pieces: ByteArray,
 }
 
 fn decode_value(encoded_value: &str) -> SerdeBencodeValue {
@@ -69,6 +117,7 @@ fn handle_info(file_path: &str) {
     println!("Length: {}", decoded_value.info.length);
     println!("Info Hash: {}", hex_encoded_data);
     println!("Piece Length: {}", decoded_value.info.piece_length);
+    println!("Piece Hashes: {:?}", decoded_value.info)
 }
 
 fn main() {
