@@ -66,8 +66,8 @@ fn handle_info(file_path: &str) {
     let info = serde_bencode::to_bytes(&decoded_value.info).unwrap();
     let hex_encoded_data = calculate_hash(&info);
     println!(
-        "Tracker URL: {} Length: {} Info Hash: {}",
-        decoded_value.announce, decoded_value.info.length, hex_encoded_data
+        "Tracker URL: {} Length: {} Info Hash: {} Piece Length: {}",
+        decoded_value.announce, decoded_value.info.length, hex_encoded_data, decoded_value.info.piece_length
     );
 }
 
