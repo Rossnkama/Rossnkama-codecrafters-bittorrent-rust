@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use std::{env, fs};
-use hex;
+use hex::ToHex;
 use sha1::{Sha1, Digest};
 
 #[derive(Serialize, Deserialize)]
