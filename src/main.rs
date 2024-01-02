@@ -1,7 +1,7 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_bencode::value::Value as SerdeBencodeValue;
+use sha1::{Digest, Sha1};
 use std::{env, fs};
-use sha1::{Sha1, Digest};
 
 #[derive(Serialize, Deserialize)]
 struct Torrent {
@@ -13,7 +13,7 @@ struct Torrent {
 struct Info {
     length: usize,
     name: String,
-    #[serde(rename="piece length")]
+    #[serde(rename = "piece length")]
     piece_length: usize,
     #[serde(with = "serde_bytes")]
     pieces: Vec<u8>,
@@ -66,9 +66,10 @@ fn main() {
             hasher.update(info);
             let result = hasher.finalize();
             let hex_encoded_data = hex::encode(result);
-            println!("Tracker URL: {}", decoded_value.announce);
-            println!("Length: {}", decoded_value.info.length);
-            println!("Info Hash: {:?}", hex_encoded_data);
+            println!(
+                "Tracker URL: {}\nLength: {}\nInfo Hash: {:?}",
+                decoded_value.announce, decoded_value.info.length, hex_encoded_data
+            );
         } else {
             println!("unknown command: {}", args[1])
         }
