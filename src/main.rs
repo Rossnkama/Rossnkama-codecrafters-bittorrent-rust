@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use std::{env, fs};
+use hex;
+use sha1::{Sha1, Digest};
 
 #[derive(Serialize, Deserialize)]
 struct Torrent {
@@ -60,10 +62,13 @@ fn main() {
             let file_path = &args[2];
             let file = fs::read(file_path).unwrap();
             let decoded_value: Torrent = serde_bencode::from_bytes(&file).unwrap();
-            // println!("Tracker URL: {}", decoded_value.announce);
-            // println!("Length: {}", decoded_value.info.length);
             let info = serde_bencode::to_bytes(&decoded_value.info).unwrap();
-            eprintln!("Hash Info: {:?}", info);
+            let mut hasher = Sha1::new();
+            hasher.update(info);
+            let result = hasher.finalize();
+            println!("Tracker URL: {}", decoded_value.announce);
+            println!("Length: {}", decoded_value.info.length);
+            eprintln!("Hash Info: {:?}", result);
         } else {
             println!("unknown command: {}", args[1])
         }
