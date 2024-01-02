@@ -60,8 +60,8 @@ fn main() {
             let file_path = &args[2];
             let file = fs::read(file_path).unwrap();
             let decoded_value: Torrent = serde_bencode::from_bytes(&file).unwrap();
+            println!("Length: {}", std::mem::size_of_val(&decoded_value.info));
             print!("Tracker URL: {}", decoded_value.announce);
-            print!("Length: {}", std::mem::size_of_val(&decoded_value.info.piece_length));
         } else {
             println!("unknown command: {}", args[1])
         }
