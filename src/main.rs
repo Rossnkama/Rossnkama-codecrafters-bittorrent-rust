@@ -1,5 +1,22 @@
+use serde::{Serialize, Deserialize};
 use serde_bencode::value::Value as SerdeBencodeValue;
-use std::env;
+use std::{env, fs};
+
+#[derive(Serialize, Deserialize)]
+struct Torrent {
+    announce: String,
+    info: Info,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Info {
+    length: usize,
+    name: String,
+    #[serde(rename="piece length")]
+    piece_length: usize,
+    #[serde(with = "serde_bytes")]
+    pieces: Vec<u8>,
+}
 
 fn decode_value(encoded_value: &str) -> SerdeBencodeValue {
     let serde_data: SerdeBencodeValue = serde_bencode::from_str(encoded_value).unwrap();
@@ -39,6 +56,11 @@ fn main() {
             let encoded_value = &args[2];
             let decoded_value = decode_value(encoded_value);
             println!("{}", render_value(&decoded_value));
+        } else if command == "info" {
+            let file_path = &args[2];
+            let file = fs::read(file_path).unwrap();
+            let decoded_value: Torrent = serde_bencode::from_bytes(&file).unwrap();
+            println!("{:?}", decoded_value.announce);
         } else {
             println!("unknown command: {}", args[1])
         }
