@@ -62,7 +62,7 @@ fn main() {
             let decoded_value: Torrent = serde_bencode::from_bytes(&file).unwrap();
             println!("Tracker URL: {}", decoded_value.announce);
             println!("Length: {}", decoded_value.info.length);
-            eprintln!("Hash Info: {}", serde_bencode::to_string(&decoded_value).unwrap())
+            eprintln!("Hash Info: {}", serde_bencode::to_string(&decoded_value.info).unwrap());
         } else {
             println!("unknown command: {}", args[1])
         }
