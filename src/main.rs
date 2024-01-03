@@ -51,11 +51,8 @@ impl Serialize for Pieces {
     where
         S: Serializer,
     {
-        let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
-        for elem in &self.0 {
-            let _seq = seq.serialize_element(&elem)?;
-        }
-        seq.end()
+        let flat_slice = self.0.concat();
+        serializer.serialize_bytes(&flat_slice)
     }
 }
 
