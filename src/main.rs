@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize, Deserializer};
+use serde::ser::{Serialize, SerializeMap, SerializeSeq, Serializer};
+use serde::{Deserialize, Deserializer};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use sha1::{Digest, Sha1};
 use std::{env, fs};
@@ -7,6 +8,7 @@ use std::fmt;
 
 use serde::de::{self, Visitor};
 
+#[derive(Debug)]
 struct Pieces(Vec<[u8; 20]>);
 struct PiecesVisitor;
 
@@ -44,20 +46,33 @@ impl<'de> Deserialize<'de> for Pieces {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+impl Serialize for Pieces {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.0.len()));
+        for elem in self.0 {
+            seq?.serialize_element(&elem).unwrap();
+        }
+        seq?.end()
+    }
+}
+
+#[derive(serde::Serialize, Deserialize, Debug)]
 struct Torrent {
     announce: String,
     info: Info,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(serde::Serialize, Deserialize, Debug)]
 struct Info {
     length: usize,
     name: String,
     #[serde(rename = "piece length")]
     piece_length: usize,
-    #[serde(with = "serde_bytes")]
-    pieces: Vec<u8>,
+    // #[serde(with = "serde_bytes")]
+    pieces: Pieces,
 }
 
 fn decode_value(encoded_value: &str) -> SerdeBencodeValue {
@@ -111,8 +126,8 @@ fn handle_info(file_path: &str) {
     println!("Info Hash: {}", hex_encoded_data);
     println!("Piece Length: {}", decoded_value.info.piece_length);
     println!("Piece Hashes: ");
-    for piece in &decoded_value.info.pieces {
-        print!("{} ", calculate_hash(&[*piece]));
+    for piece in &decoded_value.info.pieces.0 {
+        print!("{} ", calculate_hash(piece));
     }
     println!();
 }
