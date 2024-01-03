@@ -124,7 +124,7 @@ fn handle_info(file_path: &str) {
     println!("Piece Length: {}", decoded_value.info.piece_length);
     println!("Piece Hashes: ");
     for piece in &decoded_value.info.pieces.0 {
-        print!("{} ", calculate_hash(piece));
+        print!("{} ", hex::encode(piece));
     }
     println!();
 }
