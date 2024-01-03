@@ -30,7 +30,7 @@ impl<'de> Visitor<'de> for PiecesVisitor {
             )));
         }
         let pieces = v
-            .chunks(20)
+            .chunks_exact(20)
             .map(|piece| piece.try_into().expect("Bad chunk size"))
             .collect();
         Ok(Pieces(pieces))
