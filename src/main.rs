@@ -110,6 +110,8 @@ fn handle_info(file_path: &str) {
     println!("Length: {}", decoded_value.info.length);
     println!("Info Hash: {}", hex_encoded_data);
     println!("Piece Length: {}", decoded_value.info.piece_length);
+    println!("Piece Hashes: ");
+    let _ = decoded_value.info.pieces.iter().map(|piece| print!("{:?}", piece));
 }
 
 fn main() {
