@@ -125,10 +125,10 @@ fn handle_info(file_path: &str) {
     println!("Length: {}", decoded_value.info.length);
     println!("Info Hash: {}", hex_encoded_data);
     println!("Piece Length: {}", decoded_value.info.piece_length);
-    println!("Piece Hashes: ");
-    for piece in &decoded_value.info.pieces.0 {
-        print!("{} ", calculate_hash(piece));
-    }
+    // println!("Piece Hashes: ");
+    // for piece in &decoded_value.info.pieces.0 {
+    //     print!("{} ", calculate_hash(piece));
+    // }
     println!();
 }
 
