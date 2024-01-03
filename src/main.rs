@@ -1,4 +1,4 @@
-use serde::ser::{Serialize, SerializeMap, SerializeSeq, Serializer};
+use serde::ser::{Serialize, SerializeSeq, Serializer};
 use serde::{Deserialize, Deserializer};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use sha1::{Digest, Sha1};
@@ -51,11 +51,11 @@ impl Serialize for Pieces {
     where
         S: Serializer,
     {
-        let mut seq = serializer.serialize_seq(Some(self.0.len()));
-        for elem in self.0 {
-            seq?.serialize_element(&elem).unwrap();
+        let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
+        for elem in &self.0 {
+            let _seq = seq.serialize_element(&elem)?;
         }
-        seq?.end()
+        seq.end()
     }
 }
 
