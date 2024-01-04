@@ -1,4 +1,4 @@
-use crate::torrent_pieces_model;
+use crate::torrent_pieces;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -14,5 +14,5 @@ pub struct Info {
     #[serde(rename = "piece length")]
     pub piece_length: usize,
     // #[serde(with = "serde_bytes")]
-    pub pieces: torrent_pieces_model::Pieces,
+    pub pieces: torrent_pieces::Pieces,
 }
