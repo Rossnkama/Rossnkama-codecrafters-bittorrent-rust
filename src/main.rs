@@ -1,16 +1,9 @@
-use sha1::{Digest, Sha1};
 use std::{env, fs};
 
+mod bencode;
+mod hash;
 mod torrent;
 mod torrent_pieces;
-mod bencode;
-
-fn calculate_hash(info: &[u8]) -> String {
-    let mut hasher = Sha1::new();
-    hasher.update(info);
-    let result = hasher.finalize();
-    hex::encode(result)
-}
 
 fn handle_decode(encoded_value: &str) {
     let decoded_value = bencode::decode_value(encoded_value);
@@ -21,7 +14,7 @@ fn handle_info(file_path: &str) {
     let file = fs::read(file_path).unwrap();
     let decoded_value: torrent::Torrent = serde_bencode::from_bytes(&file).unwrap();
     let info = serde_bencode::to_bytes(&decoded_value.info).unwrap();
-    let hex_encoded_data = calculate_hash(&info);
+    let hex_encoded_data = hash::calculate_hash(&info);
     println!("Tracker URL: {}", decoded_value.announce);
     println!("Length: {}", decoded_value.info.length);
     println!("Info Hash: {}", hex_encoded_data);
