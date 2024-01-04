@@ -1,25 +1,9 @@
-use serde::{Deserialize, Deserializer};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use sha1::{Digest, Sha1};
 use std::{env, fs};
 
+mod torrent_file_model;
 mod torrent_pieces_model;
-
-#[derive(serde::Serialize, Deserialize, Debug)]
-struct Torrent {
-    announce: String,
-    info: Info,
-}
-
-#[derive(serde::Serialize, Deserialize, Debug)]
-struct Info {
-    length: usize,
-    name: String,
-    #[serde(rename = "piece length")]
-    piece_length: usize,
-    // #[serde(with = "serde_bytes")]
-    pieces: torrent_pieces_model::Pieces,
-}
 
 fn decode_value(encoded_value: &str) -> SerdeBencodeValue {
     let serde_data: SerdeBencodeValue = serde_bencode::from_str(encoded_value).unwrap();
@@ -64,7 +48,7 @@ fn handle_decode(encoded_value: &str) {
 
 fn handle_info(file_path: &str) {
     let file = fs::read(file_path).unwrap();
-    let decoded_value: Torrent = serde_bencode::from_bytes(&file).unwrap();
+    let decoded_value: torrent_file_model::Torrent = serde_bencode::from_bytes(&file).unwrap();
     let info = serde_bencode::to_bytes(&decoded_value.info).unwrap();
     let hex_encoded_data = calculate_hash(&info);
     println!("Tracker URL: {}", decoded_value.announce);
