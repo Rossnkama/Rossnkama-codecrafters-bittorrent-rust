@@ -1,60 +1,9 @@
-use serde::ser::{Serialize, SerializeSeq, Serializer};
 use serde::{Deserialize, Deserializer};
 use serde_bencode::value::Value as SerdeBencodeValue;
 use sha1::{Digest, Sha1};
 use std::{env, fs};
 
-use std::fmt;
-
-use serde::de::{self, Visitor};
-
-#[derive(Debug)]
-struct Pieces(Vec<[u8; 20]>);
-struct PiecesVisitor;
-
-impl<'de> Visitor<'de> for PiecesVisitor {
-    type Value = Pieces;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A byte string where it's len % 20 == 0")
-    }
-
-    fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        if v.len() % 20 != 0 {
-            return Err(E::custom(format!(
-                "Length is not a multiple of 20 at {}",
-                v.len()
-            )));
-        }
-        let pieces = v
-            .chunks_exact(20)
-            .map(|piece| piece.try_into().expect("Bad chunk size"))
-            .collect();
-        Ok(Pieces(pieces))
-    }
-}
-
-impl<'de> Deserialize<'de> for Pieces {
-    fn deserialize<D>(deserializer: D) -> Result<Pieces, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_bytes(PiecesVisitor)
-    }
-}
-
-impl Serialize for Pieces {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let flat_slice = self.0.concat();
-        serializer.serialize_bytes(&flat_slice)
-    }
-}
+mod torrent_pieces_model;
 
 #[derive(serde::Serialize, Deserialize, Debug)]
 struct Torrent {
@@ -69,7 +18,7 @@ struct Info {
     #[serde(rename = "piece length")]
     piece_length: usize,
     // #[serde(with = "serde_bytes")]
-    pieces: Pieces,
+    pieces: torrent_pieces_model::Pieces,
 }
 
 fn decode_value(encoded_value: &str) -> SerdeBencodeValue {
@@ -123,7 +72,7 @@ fn handle_info(file_path: &str) {
     println!("Info Hash: {}", hex_encoded_data);
     println!("Piece Length: {}", decoded_value.info.piece_length);
     println!("Piece Hashes: ");
-    for piece in &decoded_value.info.pieces.0 {
+    for piece in decoded_value.info.pieces.get() {
         print!("{} ", hex::encode(piece));
     }
     println!();
