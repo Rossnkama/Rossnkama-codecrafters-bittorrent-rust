@@ -1,6 +1,5 @@
 use crate::hash::calculate_hash;
 use crate::torrent::Torrent;
-use anyhow::Context;
 use reqwest::blocking::Response;
 use serde::Serialize;
 
@@ -37,7 +36,6 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
 
     // TODO: Handle gracefully
     let url_params = serde_urlencoded::to_string(&request)
-        .context("URL Encode Tracker Params")
         .unwrap();
 
     let res: Response = client.get(&torrent.announce).query(&url_params).send()?;
