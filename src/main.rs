@@ -1,4 +1,6 @@
-use std::{env, fs};
+use std::env;
+
+use torrent::Torrent;
 
 mod bencode;
 mod hash;
@@ -12,8 +14,7 @@ fn handle_decode(encoded_value: &str) {
 }
 
 fn handle_info(file_path: &str) {
-    let file = fs::read(file_path).unwrap();
-    let decoded_value: torrent::Torrent = serde_bencode::from_bytes(&file).unwrap();
+    let decoded_value = torrent::read_from_file(file_path);
     let info = serde_bencode::to_bytes(&decoded_value.info).unwrap();
     let hex_encoded_data = hash::calculate_hash(&info);
     println!("Tracker URL: {}", decoded_value.announce);
@@ -35,7 +36,10 @@ fn main() {
         match command.as_str() {
             "decode" => handle_decode(&args[2]),
             "info" => handle_info(&args[2]),
-            "peers" => tracker::placeholder().unwrap(),
+            "peers" => {
+                let torrent = torrent::read_from_file(&args[2]);
+                tracker::discover(&torrent).unwrap()
+            },
             _ => println!("unknown command: {}", args[1]),
         }
     } else {
