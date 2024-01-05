@@ -18,7 +18,7 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
             ("port", "6881"),
             ("uploaded", "0"),
             ("downloaded", "0"),
-            ("left", torrent.info.length.to_string()),
+            ("left", &torrent.info.length.to_string()),
             ("compact", "1"),
         )])
         .send()?;
