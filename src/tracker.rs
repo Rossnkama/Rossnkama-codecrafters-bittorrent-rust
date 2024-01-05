@@ -9,7 +9,7 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
 
     // TODO: Handle this error gracefully
     let res: Response = client
-        .post(&torrent.announce)
+        .get(&torrent.announce)
         .query(&[
             (
                 "info_hash",
