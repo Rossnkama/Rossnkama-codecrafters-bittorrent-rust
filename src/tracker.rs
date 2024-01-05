@@ -1,11 +1,12 @@
-use reqwest::blocking::Response;
-use serde::Serialize;
 use crate::hash::calculate_hash;
 use crate::torrent::Torrent;
+use anyhow::Context;
+use reqwest::blocking::Response;
+use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct TrackerRequest {
-    info_hash: Vec<u8>,
+    info_hash: [u8; 20],
     peer_id: String,
     port: u16,
     uploaded: usize,
@@ -34,11 +35,12 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
     let client = reqwest::blocking::Client::new();
     let request = TrackerRequest::new(torrent);
 
-    let res: Response = client
-        .get(&torrent.announce)
-        .query(&request)
-        .send()?;
+    // TODO: Handle gracefully
+    let url_params = serde_urlencoded::to_string(&request)
+        .context("URL Encode Tracker Params")
+        .unwrap();
 
+    let res: Response = client.get(&torrent.announce).query(&url_params).send()?;
     println!("body = {:?}", res);
     Ok(())
 }
