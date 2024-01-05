@@ -4,6 +4,7 @@ mod bencode;
 mod hash;
 mod torrent;
 mod torrent_pieces;
+mod tracker;
 
 fn handle_decode(encoded_value: &str) {
     let decoded_value = bencode::decode_value(encoded_value);
@@ -34,6 +35,7 @@ fn main() {
         match command.as_str() {
             "decode" => handle_decode(&args[2]),
             "info" => handle_info(&args[2]),
+            "peers" => tracker::placeholder().unwrap(),
             _ => println!("unknown command: {}", args[1]),
         }
     } else {
