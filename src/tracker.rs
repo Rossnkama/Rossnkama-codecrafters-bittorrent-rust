@@ -35,8 +35,7 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
     let request = TrackerRequest::new(torrent);
 
     // TODO: Handle gracefully
-    let url_params = serde_urlencoded::to_string(&request)
-        .unwrap();
+    let url_params = serde_urlencoded::to_string(&request).unwrap();
 
     let res: Response = client.get(&torrent.announce).query(&url_params).send()?;
     println!("body = {:?}", res);
