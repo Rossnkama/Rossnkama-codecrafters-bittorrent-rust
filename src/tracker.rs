@@ -1,10 +1,23 @@
 use crate::hash::calculate_hash;
 use crate::torrent::Torrent;
 use reqwest::blocking::Response;
-use serde::Serialize;
+use serde::{Serialize, Serializer};
+
+pub fn urlencode<S>(t: &[u8; 20], serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let mut encoded = String::with_capacity(3 * t.len());
+    for &byte in t {
+        encoded.push('%');
+        encoded.push_str(&hex::encode([byte]));
+    }
+    serializer.serialize_str(&encoded)
+}
 
 #[derive(Debug, Serialize)]
 pub struct TrackerRequest {
+    #[serde(serialize_with = "urlencode")]
     info_hash: [u8; 20],
     peer_id: String,
     port: u16,
