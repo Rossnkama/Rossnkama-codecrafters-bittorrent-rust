@@ -11,21 +11,16 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
     let res: Response = client
         .get(&torrent.announce)
         .query(&[
-            (
-                "info_hash",
-                calculate_hash(&info.expect("Info did not unwrap!")),
-            ),
-            ("peer_id", "00112233445566778899".as_bytes().to_vec()),
-            ("port", "6881".as_bytes().to_vec()),
-            ("uploaded", "0".as_bytes().to_vec()),
-            ("downloaded", "0".as_bytes().to_vec()),
-            ("left", torrent.info.length.to_string().as_bytes().to_vec()),
-            ("compact", "1".as_bytes().to_vec()),
+            ("info_hash", hex::encode(calculate_hash(&info.unwrap()))),
+            ("peer_id", "00112233445566778899".to_owned()),
+            ("port", "6881".to_owned()),
+            ("uploaded", "0".to_owned()),
+            ("downloaded", "0".to_owned()),
+            ("left", torrent.info.length.to_string()),
+            ("compact", "1".to_owned()),
         ])
         .send()?;
 
-    // let decoded_value = bencode::decode_value(&body);
-    // let val = bencode::render_value(&decoded_value);
     println!("body = {:?}", res);
     Ok(())
 }
