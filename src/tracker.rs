@@ -13,7 +13,7 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
         .post(&torrent.announce)
         .query(&[(
             "info_hash",
-            calculate_hash(&info.unwrap()),
+            &calculate_hash(&info.expect("Info did not unwrap!")),
             ("peer_id", "00112233445566778899"),
             ("port", "6881"),
             ("uploaded", "0"),
