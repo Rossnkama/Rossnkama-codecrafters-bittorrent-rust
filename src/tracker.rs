@@ -1,6 +1,5 @@
-use reqwest::blocking::{self, Response};
+use reqwest::blocking::Response;
 
-use crate::bencode;
 use crate::hash::calculate_hash;
 use crate::torrent::Torrent;
 
