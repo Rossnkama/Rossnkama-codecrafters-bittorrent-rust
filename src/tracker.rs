@@ -7,10 +7,13 @@ pub fn urlencode<S>(t: &[u8; 20], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
-    let mut encoded = String::with_capacity(3 * t.len());
+    let mut encoded = String::new();
     for &byte in t {
-        encoded.push('%');
-        encoded.push_str(&format!("{:02X}", byte));
+        if byte.is_ascii_alphanumeric() || byte == b'-' || byte == b'_' || byte == b'.' || byte == b'~' {
+            encoded.push(byte as char);
+        } else {
+            encoded.push_str(&format!("%{:02X}", byte));
+        }
     }
     serializer.serialize_str(&encoded)
 }
