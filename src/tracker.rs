@@ -8,6 +8,6 @@ pub fn discover(torrent: &Torrent) -> Result<(), reqwest::Error> {
     let decoded_value = bencode::decode_value(&body);
     let val = bencode::render_value(&decoded_value);
 
-    println!("body = {:?}", val);
+    println!("body = {}", val);
     Ok(())
 }
