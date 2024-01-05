@@ -1,13 +1,7 @@
-use reqwest;
-use tokio::runtime::Runtime;
+use reqwest::blocking;
 
 pub fn placeholder() -> Result<(), reqwest::Error> {
-    let body = Runtime::new().unwrap().block_on(async {
-        reqwest::get("https://www.rust-lang.org")
-            .await?
-            .text()
-            .await
-    })?;
+    let body = blocking::get("http://bittorrent-test-tracker.codecrafters.io/announce")?.text()?;
 
     println!("body = {:?}", body);
     Ok(())
