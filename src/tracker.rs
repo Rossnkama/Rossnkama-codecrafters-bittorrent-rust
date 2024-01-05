@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::hash::calculate_hash;
 use crate::torrent::Torrent;
 
-#[derive(Serialize)]
+// #[derive(Serialize)]
 pub struct TrackerRequest {
     info_hash: Vec<u8>,
     peer_id: String,
