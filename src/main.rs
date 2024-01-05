@@ -1,7 +1,5 @@
 use std::env;
 
-use torrent::Torrent;
-
 mod bencode;
 mod hash;
 mod torrent;
@@ -39,7 +37,7 @@ fn main() {
             "peers" => {
                 let torrent = torrent::read_from_file(&args[2]);
                 tracker::discover(&torrent).unwrap()
-            },
+            }
             _ => println!("unknown command: {}", args[1]),
         }
     } else {
